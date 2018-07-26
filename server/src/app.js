@@ -11,8 +11,11 @@ app.use(cors());
 
 // End points
 
-app.get('/status', (req, res) => {
-    res.sendStatus(200);
+app.post('/register', (req, res) => {    
+    const email = req.body.email;
+    res.send({
+        message: `Hello ${email}! You have registered. Have Fun!`
+    })
 });
 
 app.listen(process.env.PORT || 8085, () => {
