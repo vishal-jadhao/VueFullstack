@@ -1,23 +1,33 @@
-const express = require('express');
-const bodyparser = require('body-parser');
-const morgan = require('morgan');
-const cors = require('cors');
+const express = require('express')
+const bodyparser = require('body-parser')
+const morgan = require('morgan')
+const cors = require('cors')
+const mongoose = require('mongoose')
 
-const app = express();
+// Server config
+const config = require('./config/config')
 
-app.use(morgan('combined'));
-app.use(bodyparser.json());
-app.use(cors());
+// Database config
+const dbConfig = require('./config/db.config')
+mongoose.connect(dbConfig.url)
+mongoose.Promise = global.Promise
+var db = mongoose.connection
+db.on('error', console.error.bind(console, 'connection error:'))
+db.once('open', () => {
+  console.log('Database is connected....')
+})
+
+const app = express()
+
+app.use(morgan('combined'))
+app.use(bodyparser.json())
+app.use(cors())
 
 // End points
+require('./routes/routes')(app)
 
-app.post('/register', (req, res) => {    
-    const email = req.body.email;
-    res.send({
-        message: `Hello ${email}! You have registered. Have Fun!`
-    })
-});
+app.listen(config.port, () => {
+  console.log('Server Started...')
+})
 
-app.listen(process.env.PORT || 8085, () => {
-    console.log('server started');
-});
+module.exports = app
