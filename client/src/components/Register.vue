@@ -1,40 +1,36 @@
 <template>
- <v-content>
-    <v-container fluid fill-height>
-      <v-layout align-center justify-center row fill-height>
-        <v-flex xs12 sm6 md6 lg6>
-          <div class="white elevation-2">
-            <v-toolbar flat dense class="teal" dark>
-              <v-toolbar-title>Register</v-toolbar-title>
-            </v-toolbar>
-            <div class='pt-4 pb-4 pr-4 pl-4'>
-              <v-text-field
-                v-model='email'
-                label='Email'
-                name='email'
-              ></v-text-field>
-              <v-text-field
-                v-model='password'
-                label='Password'
-                type='password'
-                name='password'
-              ></v-text-field>
-              <div v-if="error">
-                <div class="error" v-html="error"></div>
-              </div>
-              <div class="text-lg-right">
-                <v-btn @click="register" class="teal register-btn">Register</v-btn>
-              </div>
+  <v-container fluid fill-height>
+    <v-layout align-center justify-center row fill-height>
+      <panel title="Register">
+        <div class='pt-4 pb-4 pr-4 pl-4'>
+          <v-form name='tabTrackerForm'>
+            <v-text-field
+              v-model='email'
+              label='Email'
+              name='email'
+            ></v-text-field>
+            <v-text-field
+              v-model='password'
+              label='Password'
+              type='password'
+              name='password'
+            ></v-text-field>
+            <div v-if='error'>
+              <div class='error' v-html='error'></div>
             </div>
-          </div>
-        </v-flex>
-      </v-layout>
-    </v-container>
- </v-content>
+            <div class='text-lg-right'>
+              <v-btn @click='register' class='teal register-btn'>Register</v-btn>
+            </div>
+          </v-form>
+        </div>
+      </panel>
+    </v-layout>
+  </v-container>
 </template>
 
 <script>
 import AuthService from '@/services/AuthService'
+import Panel from '@/components/common/Panel'
 export default {
   name: 'Register',
   data () {
@@ -47,10 +43,11 @@ export default {
   methods: {
     async register () {
       try {
-        await AuthService.register({
+        const response = await AuthService.register({
           email: this.email,
           password: this.password
         })
+        this.$store.dispatch('setUser', response.data.user)
         this.error = null
       } catch (error) {
         this.error = error.response.data.error
@@ -58,6 +55,9 @@ export default {
       this.email = ''
       this.password = ''
     }
+  },
+  components: {
+    Panel
   }
 }
 </script>
